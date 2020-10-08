@@ -1,6 +1,6 @@
 # mndlbreed
 
-Learn Mendelian inheritance with dragons and potatoes
+Learn Mendelian inheritance with dragons and potatoes.
 
 
 Inspired by the dragon breeding game (more info here: https://www.scienceinschool.org/2011/issue18/dragons) developed by Pat Tellinghuisen, Jennifer Sexton and Rachael Shevin.
