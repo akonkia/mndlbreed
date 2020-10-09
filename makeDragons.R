@@ -24,6 +24,13 @@ colnames(genes) <- c("Chromosome", "Length", "Start", "End", "Gene", "Allele 1",
 
 ##############################################################################
 
+################################Phenotyping table#############################
+Genotype <- c("FF", "Ff", "ff", "MM", "Mm", "mm", "SS", "Ss", "ss", "TT", "Tt", "tt", "WW", "Ww", "ww", "HH", "Hh", "hh", "AA", "Aa", "aa")
+
+Phenotype <- c("Fire-breathing", "Fire-breathing", "Does not breath fire", "Four toes", "Four toes", "Three toes", "Five spikes on tail", "Five spikes on tail", "Four spikes on tail",
+               "Red tail", "Red tail", "Yellow tail", "Red wings", "Red wings", "Yellow wings", "Horn", "Horn", "No horn", "Blue body and head", "Blue body and head", "Green body and head")
+
+phenoTable <- data.frame(Genotype, Phenotype)
 
 ##################create haplotype####
 createHaplotype <- function(traits){
@@ -88,8 +95,9 @@ breedDragon <- function(first, second){
 ########################################
 ###############Sort genotype############
 ###Sort alleles, so that aA or Aa is presented as Aa
+#helper function to getGenotype
 sortGenotype <- function(x) {
-  tmp <- x
+  tmp <- sort(x)
 g <- vector(length = length(tmp))
 
 for (char in 1:(length(tmp)-1)){
@@ -115,7 +123,7 @@ return (g)}
 ##Present genotype in a succinct manner
 getGenotype <- function(dragon){
   gen <- unlist(dragon)
-  sorted <- sortGenotype(sort(gen))
+  sorted <- sortGenotype(gen)
   return(sorted)
 }
 
@@ -194,8 +202,8 @@ showParents <- function(dragon, dragon2){
 
 ###############Collapse genotype############
 ###Sort alleles, so that aA or Aa is presented as Aa
-collapseGenotype <- function(x) {
-  gen <- getGenotype(x)
+collapseGenotype <- function(dragon) {
+  gen <- getGenotype(dragon)
   add <- 0
   short <- ""
   for(i in 1:(length(gen)/2)){
@@ -208,4 +216,97 @@ collapseGenotype <- function(x) {
     }
   }
   return (short)
+}
+
+##################Output frequency plot/table for genotype########
+
+showGenFreq <- function(sward){
+  pool <- countFreq(sward)
+  freq <- count (pool, pool$Genotype)
+  #sort the freq table
+  freq <- freq[order(nrow(freq):1),]
+  rownames(freq) <- 1:dim(freq)[1]
+  colnames(freq) <- c("Genotype", "Count")
+  freq$Genotype <- factor(freq$Genotype)
+  
+  colors <- c("#8DA0CB", "#FC8D62", "#66C2A5", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494")
+  colors <- rep(colors,3)
+  
+  if (length(t) < 4){
+    # TODO Show a frequency plot, when n is less or equal 3. When n is higher than 3, show a table
+    output <- ggplot(freq, aes(x = Genotype, y = Count)) +
+      theme_void()+
+      geom_bar(fill = colors[1:dim(freq)[1]], stat = "identity") +
+      geom_text(aes(label = Count), vjust = -0.3)+
+      geom_text(aes(label = Genotype , vjust = 2.5), color = "black", family = "mono", fontface = "bold")+
+      scale_x_discrete(limits = rev(levels(freq$Genotype)))+
+      labs(x = "Genotype", y = NULL)+
+      ggtitle ("How many dragons had the same genotype?")+
+      theme(plot.title = element_text(hjust = 0.5))
+  }else{
+    
+    output <- freq
+    #grid.table(d,rows=NULL, theme= ttheme_minimal())
+  }
+  return(output)
+}
+
+###################Count freq of the genotypes#############
+countFreq <- function(sward){
+  for (i in 1:offspring){
+    if (i == 1){
+      pool <- data.frame(collapseGenotype(sward[[i]]), t(getGenotype(sward[[i]])))
+      colnames(pool) <- c("Genotype", 1:(length(getGenotype(sward[[i]]))))
+    }else{
+      pool <- rbind(pool, c(collapseGenotype(sward[[i]]), getGenotype(sward[[i]])))
+    }
+  }
+  return(pool)
+}
+
+#trick to turn list to data.frame, strings as factors:
+#df <- data.frame(matrix(unlist(list), nrow=length(list), byrow=T))
+#strings not as factors:
+#df <- data.frame(matrix(unlist(l), nrow=132, byrow=T),stringsAsFactors=FALSE)
+
+####################create sward of dragons#############
+makeSward <- function(drag1, drag2, offspring){
+  sward <- list()
+  for (i in 1:offspring){
+    sward <- list.append(sward, breedDragon(drag1, drag2))
+  }
+  return(sward)
+}
+
+
+######create phenotype###################################
+getPhenotype <- function(dragon){
+type <- c(unlist(strsplit(collapseGenotype(dragon), " ")))
+phenotype <- phenoTable[phenoTable$Genotype %in% type,]
+rownames(phenotype) <- NULL
+return(phenotype)
+}
+
+########Phenotype sward############################
+#####Phenotypes every dragon in a sward###########
+phenotypeSward <- function(sward){
+  phenotypes <- list()
+for (each in sward){
+  type <- c(unlist(strsplit(collapseGenotype(each), " ")))
+  tmp <- paste(phenoTable[phenoTable$Genotype %in% type,]$Phenotype, collapse = ', ')
+  phenotypes <- list.append(phenotypes, tmp)
+}
+  df <- data.frame(matrix(unlist(phenotypes), nrow=length(phenotypes), byrow=T), rep(1, length(phenotypes)))
+  colnames(df) <- c("Phenotype", "Count")
+  return(df)
+}
+
+############## Show frequencies of the phenotypes
+showPhenFreq <- function(sward){
+  phenotypes <- phenotypeSward(sward)
+  freq <- count (phenotypes, phenotypes$Phenotype)
+  freq <- freq[order(-freq$n),]
+  colnames(freq) <- c("Phenotype", "Count")
+  rownames(freq) <- NULL
+  return(freq)
 }
