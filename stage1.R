@@ -1,4 +1,4 @@
-source("makeDragons.R")
+source("breedDragons/makeDragons.R")
 library(ggpubr)
 library(gridExtra)
 library(grid)
@@ -7,8 +7,10 @@ library(lattice)
 
 #User input
 offspring <- 100 # number of offspring to be generated. Slider with options 1-10 000, for ex.
-t <- sample(alleles, 2) #  Number of traits to be taken. Up to 7 traits available.  For now, we assume that one trait goes on one individual chromosome.
+t <- sample(alleles, 4) #  Number of traits to be taken. Up to 7 traits available.  For now, we assume that one trait goes on one individual chromosome.
 # Add option to pick alleles for parents. Ex. radio buttons for every option. Would need to be interactively generated as step 2. For now it is random
+
+#alleles[alleles %in% t]
 
 # Start with creating two dragon parents
 drag1 <- createDragon(t)
@@ -24,7 +26,7 @@ sward <- makeSward(drag1, drag2, offspring)
 plotGenotype(sward[[2]])
 
 # Show frequencies of the genotypes
-showGenFreq(sward)
+showGenFreq(sward, t)
 
 ######Get phenotype of a dragon
 getPhenotype(sward[[3]])

@@ -8,7 +8,8 @@ library(tidyverse)
 gene_names <- c("Body colour", "Horn", "Wings", "Tail colour", "Tail spikes", "Toes number", "Fire breathing")
 
 #alleles = data.frame(c("A", "a"), c("B", "b"), c("C", "c"), c("D", "d"),c("E", "e"))
-alleles <- data.frame(c("A", "a"), c("H", "h"), c("W", "w"), c("T", "t"),c("S", "s"), c("M", "m"),c("F", "f")) 
+alleles <- data.frame(c("A", "a"), c("H", "h"), c("W", "w"), c("T", "t"),c("S", "s"), c("M", "m"),c("F", "f"))
+colnames(alleles) <- c("Body and head color", "Horn", "Wing color", "Tail color", "Number of tail spikes", "Number of toes", "Fire-breathing")
 length = c(100L, 150L, 180L, 200L, 250, 280L, 300L)
 chromosome = c("chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7")
 start = c(50,80, 40, 100,150,80,260)
@@ -59,12 +60,12 @@ createDragon <- function(traits, diploidy = 2){
 #######################################
 
 
-##############Set parents###############
-setParents <- function(drag1, drag2){
-  parents <- list(drag1, drag2)
-  return(parents)
-}
-########################################
+# ##############Set parents###############
+# setParents <- function(drag1, drag2){
+#   parents <- list(drag1, drag2)
+#   return(parents)
+# }
+# ########################################
 
 ###############Generate gametes#########
 generateGamete <- function(dragon){
@@ -80,7 +81,7 @@ generateGamete <- function(dragon){
 
 #################Breed dragons#########
 breedDragon <- function(first, second){
-  parents <- setParents (drag1, drag2)
+  parents <- list(first, second)
   n <- 2
   dragon <- list()
   for (i in 1:n){
@@ -220,19 +221,21 @@ collapseGenotype <- function(dragon) {
 
 ##################Output frequency plot/table for genotype########
 
-showGenFreq <- function(sward){
-  pool <- countFreq(sward)
-  freq <- count (pool, pool$Genotype)
-  #sort the freq table
-  freq <- freq[order(nrow(freq):1),]
-  rownames(freq) <- 1:dim(freq)[1]
-  colnames(freq) <- c("Genotype", "Count")
-  freq$Genotype <- factor(freq$Genotype)
+showGenFreq <- function(sward, t){
+  
+  freq <- getFreq(sward)
+  # pool <- countFreq(sward)
+  # freq <- count (pool, pool$Genotype)
+  # #sort the freq table
+  # freq <- freq[order(nrow(freq):1),]
+  # rownames(freq) <- 1:dim(freq)[1]
+  # colnames(freq) <- c("Genotype", "Count")
+  # freq$Genotype <- factor(freq$Genotype)
   
   colors <- c("#8DA0CB", "#FC8D62", "#66C2A5", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494")
   colors <- rep(colors,3)
   
-  if (length(t) < 4){
+  if (dim(freq)[1] < 9){
     # TODO Show a frequency plot, when n is less or equal 3. When n is higher than 3, show a table
     output <- ggplot(freq, aes(x = Genotype, y = Count)) +
       theme_void()+
@@ -253,7 +256,7 @@ showGenFreq <- function(sward){
 
 ###################Count freq of the genotypes#############
 countFreq <- function(sward){
-  for (i in 1:offspring){
+  for (i in 1:length(sward)){
     if (i == 1){
       pool <- data.frame(collapseGenotype(sward[[i]]), t(getGenotype(sward[[i]])))
       colnames(pool) <- c("Genotype", 1:(length(getGenotype(sward[[i]]))))
@@ -309,4 +312,17 @@ showPhenFreq <- function(sward){
   colnames(freq) <- c("Phenotype", "Count")
   rownames(freq) <- NULL
   return(freq)
+}
+
+
+##############Get genotype freq table
+getFreq <- function(sward){
+pool <- countFreq(sward)
+freq <- count (pool, pool$Genotype)
+#sort the freq table
+freq <- freq[order(nrow(freq):1),]
+rownames(freq) <- 1:dim(freq)[1]
+colnames(freq) <- c("Genotype", "Count")
+freq$Genotype <- factor(freq$Genotype)
+return(freq)
 }
