@@ -45,8 +45,8 @@ createHaplotype <- function(traits){
 ######################################
 
 #################create dragon########
-createDragon <- function(traits, diploidy = 2){
-  n <- diploidy
+createDragon <- function(traits){
+  n <- 2 #diploidy
   t<- traits
   dragon <- list()
   for (i in 1:n){
@@ -99,25 +99,25 @@ breedDragon <- function(first, second){
 #helper function to getGenotype
 sortGenotype <- function(x) {
   tmp <- sort(x)
-g <- vector(length = length(tmp))
-
-for (char in 1:(length(tmp)-1)){
+  g <- vector(length = length(tmp))
   
-  if ( tmp[char] == tmp[char+1]){
-    g[char] <- tmp[char]
-    g[char+1] <- tmp[char+1]
-  }else if(tolower(tmp[char]) == tolower(tmp[char+1])){
-    if (str_detect(tmp[char], "^[:upper:]+$")){
+  for (char in 1:(length(tmp)-1)){
+    
+    if ( tmp[char] == tmp[char+1]){
       g[char] <- tmp[char]
       g[char+1] <- tmp[char+1]
-    }else{
-      g[char] <- tmp[char+1]
-      g[char+1] <- tmp[char]
+    }else if(tolower(tmp[char]) == tolower(tmp[char+1])){
+      if (str_detect(tmp[char], "^[:upper:]+$")){
+        g[char] <- tmp[char]
+        g[char+1] <- tmp[char+1]
+      }else{
+        g[char] <- tmp[char+1]
+        g[char+1] <- tmp[char]
+      }
     }
   }
-}
-
-return (g)}
+  
+  return (g)}
 ########################################
 
 ###############Get Genotype############
@@ -155,21 +155,21 @@ plotChroms <- function(df, allele_set){
     #           size = 9)+
     
     geom_label(data = df, 
-              aes(x = Chromosome, y = Start, label = allele), 
+               aes(x = Chromosome, y = Start, label = allele), 
                show.legend = FALSE,
-              fill = colors[1:dim(df)[1]], 
-              colour = "white",
-              fontface = "bold",
-              family = "mono",
-              size = 9,
-              
-              #color=colors[1:dim(dragon)[1]]
-  )
+               fill = colors[1:dim(df)[1]], 
+               colour = "white",
+               fontface = "bold",
+               family = "mono",
+               size = 9,
+               
+               #color=colors[1:dim(dragon)[1]]
+    )
 }
 #################Plot genotype#############
 plotGenotype <- function(dragon, name = "Dragon"){
   geno <- getGenotype(dragon)
-
+  
   #create a df with chromosomes containing genes taken under account
   df <- genes[genes$`Allele 1`%in% geno | genes$`Allele 2` %in% geno, ] 
   df$`Allele 1` <- dragon$set1
@@ -186,7 +186,7 @@ plotGenotype <- function(dragon, name = "Dragon"){
   #title <- str_c(name, collapseGenotype(geno), sep = "\n")
   #text <- text_grob(title, family = "mono", size = 20)
   plot2 <- grid.arrange(text, plot, ncol = 1, heights = c(2/10, 8/10))
-
+  
   return(plot2)
 }
 #
@@ -221,36 +221,23 @@ collapseGenotype <- function(dragon) {
 
 ##################Output frequency plot/table for genotype########
 
-showGenFreq <- function(sward, t){
+plotGenFreq <- function(sward){
   
   freq <- getFreq(sward)
-  # pool <- countFreq(sward)
-  # freq <- count (pool, pool$Genotype)
-  # #sort the freq table
-  # freq <- freq[order(nrow(freq):1),]
-  # rownames(freq) <- 1:dim(freq)[1]
-  # colnames(freq) <- c("Genotype", "Count")
-  # freq$Genotype <- factor(freq$Genotype)
   
   colors <- c("#8DA0CB", "#FC8D62", "#66C2A5", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494")
-  colors <- rep(colors,3)
+  colors <- rep(colors,200)
+  # TODO Show a frequency plot, when n is less or equal 3. When n is higher than 3, show a table
+  output <- ggplot(freq, aes(x = Genotype, y = Count)) +
+    theme_void()+
+    geom_bar(fill = colors[1:dim(freq)[1]], stat = "identity") +
+    geom_text(aes(label = Count), vjust = -0.3)+
+    geom_text(aes(label = Genotype , vjust = 2.5), color = "black", family = "mono", fontface = "bold")+
+    scale_x_discrete(limits = rev(levels(freq$Genotype)))+
+    labs(x = "Genotype", y = NULL)+
+    ggtitle ("How many dragons had the same genotype?")+
+    theme(plot.title = element_text(hjust = 0.5))
   
-  if (dim(freq)[1] < 9){
-    # TODO Show a frequency plot, when n is less or equal 3. When n is higher than 3, show a table
-    output <- ggplot(freq, aes(x = Genotype, y = Count)) +
-      theme_void()+
-      geom_bar(fill = colors[1:dim(freq)[1]], stat = "identity") +
-      geom_text(aes(label = Count), vjust = -0.3)+
-      geom_text(aes(label = Genotype , vjust = 2.5), color = "black", family = "mono", fontface = "bold")+
-      scale_x_discrete(limits = rev(levels(freq$Genotype)))+
-      labs(x = "Genotype", y = NULL)+
-      ggtitle ("How many dragons had the same genotype?")+
-      theme(plot.title = element_text(hjust = 0.5))
-  }else{
-    
-    output <- freq
-    #grid.table(d,rows=NULL, theme= ttheme_minimal())
-  }
   return(output)
 }
 
@@ -284,21 +271,21 @@ makeSward <- function(drag1, drag2, offspring){
 
 ######create phenotype###################################
 getPhenotype <- function(dragon){
-type <- c(unlist(strsplit(collapseGenotype(dragon), " ")))
-phenotype <- phenoTable[phenoTable$Genotype %in% type,]
-rownames(phenotype) <- NULL
-return(phenotype)
+  type <- c(unlist(strsplit(collapseGenotype(dragon), " ")))
+  phenotype <- phenoTable[phenoTable$Genotype %in% type,]
+  rownames(phenotype) <- NULL
+  return(phenotype)
 }
 
 ########Phenotype sward############################
 #####Phenotypes every dragon in a sward###########
 phenotypeSward <- function(sward){
   phenotypes <- list()
-for (each in sward){
-  type <- c(unlist(strsplit(collapseGenotype(each), " ")))
-  tmp <- paste(phenoTable[phenoTable$Genotype %in% type,]$Phenotype, collapse = ', ')
-  phenotypes <- list.append(phenotypes, tmp)
-}
+  for (each in sward){
+    type <- c(unlist(strsplit(collapseGenotype(each), " ")))
+    tmp <- paste(phenoTable[phenoTable$Genotype %in% type,]$Phenotype, collapse = ', ')
+    phenotypes <- list.append(phenotypes, tmp)
+  }
   df <- data.frame(matrix(unlist(phenotypes), nrow=length(phenotypes), byrow=T), rep(1, length(phenotypes)))
   colnames(df) <- c("Phenotype", "Count")
   return(df)
@@ -317,12 +304,76 @@ showPhenFreq <- function(sward){
 
 ##############Get genotype freq table
 getFreq <- function(sward){
-pool <- countFreq(sward)
-freq <- count (pool, pool$Genotype)
-#sort the freq table
-freq <- freq[order(nrow(freq):1),]
-rownames(freq) <- 1:dim(freq)[1]
-colnames(freq) <- c("Genotype", "Count")
-freq$Genotype <- factor(freq$Genotype)
-return(freq)
+  pool <- countFreq(sward)
+  freq <- count (pool, pool$Genotype)
+  #sort the freq table
+  freq <- freq[order(nrow(freq):1),]
+  rownames(freq) <- 1:dim(freq)[1]
+  colnames(freq) <- c("Genotype", "Count")
+  freq$Genotype <- factor(freq$Genotype)
+  return(freq)
+}
+
+#################Give plot or table of genfreq###
+showGenFreq <- function(sward){
+  
+  freq <- getFreq(sward)
+  
+  if (dim(freq)[1] <9){
+    
+    output <- plotGenFreq(sward)
+  }else{
+    output <- freq
+  }
+  
+  return (output)
+}
+
+##########Collapse phenoTable ####
+collapsePhenoTable <- function(phenoTable){
+  
+  temp <- phenoTable[!duplicated(phenoTable$Phenotype),]
+  dup <- phenoTable[duplicated(phenoTable$Phenotype),]
+  
+  j= 1
+  for (i in 1:dim(temp)[1]){
+    if(temp$Phenotype[i] %in% dup$Phenotype){
+      temp$Genotype[i] <- paste(temp$Genotype[i], dup$Genotype[j])
+      j <- j + 1
+    }
+  }
+  rownames(temp) <- NULL
+  return (temp)
+}
+
+
+############Shorten phenoTable based on traits chosen######
+shortenPhenoTable <- function(traits){
+  type <- c(unlist(strsplit(collapseGenotype(traits), " ")))
+  type <- c(type, tolower(type))
+  short <- phenoTable$Phenotype[phenoTable$Genotype %in% type]
+  shortTable <- phenoTable[phenoTable$Phenotype %in% short,]
+  shortTable <- collapsePhenoTable(shortTable)
+  rownames(shortTable) <- NULL
+  
+  return(shortTable)
+}
+
+
+homozygoteRe <- function(dragon){
+  dragon$set1 <- tolower(dragon$set1)
+  dragon$set2 <- tolower(dragon$set2)
+  return(dragon)
+}
+
+homozygoteDo <- function(dragon){
+  dragon$set1 <- toupper(dragon$set1)
+  dragon$set2 <- toupper(dragon$set2)
+  return(dragon)
+}
+
+heterozygote <- function(dragon){
+  dragon$set1 <- toupper(dragon$set1)
+  dragon$set2 <- tolower(dragon$set2)
+  return(dragon)
 }
