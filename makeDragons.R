@@ -192,7 +192,7 @@ plotGenotype <- function(dragon, name = "Dragon"){
 #
 
 ###############Show parental genotypes####
-showParents <- function(dragon, dragon2){
+showPair <- function(dragon, dragon2){
   
   p1 <- plotGenotype(dragon, "Dragon 1")
   p2 <- plotGenotype(dragon2, "Dragon 2")
@@ -224,19 +224,32 @@ collapseGenotype <- function(dragon) {
 plotGenFreq <- function(sward){
   
   freq <- getFreq(sward)
+  if (dim(freq)[1] > 100){
+    freq <- freq[freq$Count>1,]
+  }
+  
   
   colors <- c("#8DA0CB", "#FC8D62", "#66C2A5", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494")
   colors <- rep(colors,200)
-  # TODO Show a frequency plot, when n is less or equal 3. When n is higher than 3, show a table
   output <- ggplot(freq, aes(x = Genotype, y = Count)) +
-    theme_void()+
+    theme_minimal()+
+    
     geom_bar(fill = colors[1:dim(freq)[1]], stat = "identity") +
-    geom_text(aes(label = Count), vjust = -0.3)+
-    geom_text(aes(label = Genotype , vjust = 2.5), color = "black", family = "mono", fontface = "bold")+
-    scale_x_discrete(limits = rev(levels(freq$Genotype)))+
-    labs(x = "Genotype", y = NULL)+
-    ggtitle ("How many dragons had the same genotype?")+
-    theme(plot.title = element_text(hjust = 0.5))
+    geom_text(aes(label = Count), hjust = -0.5)+
+    
+    theme(panel.grid.major = element_blank(), axis.text.x = element_blank(), panel.grid.minor = element_blank(),axis.ticks = element_blank(), axis.title.y=element_blank(),axis.title.x=element_blank())+
+    coord_flip()+
+    ggtitle ("How many dragons had the same genotype?")
+    
+    # ggplot(freq, aes(x = Genotype, y = Count)) +
+    # theme_void()+
+    # geom_bar(fill = colors[1:dim(freq)[1]], stat = "identity") +
+    # geom_text(aes(label = Count), vjust = -0.3)+
+    # geom_text(aes(label = Genotype , vjust = 2.5), color = "black", family = "mono", fontface = "bold")+
+    # scale_x_discrete(limits = rev(levels(freq$Genotype)))+
+    # labs(x = "Genotype", y = NULL)+
+    # ggtitle ("How many dragons had the same genotype?")+
+    # theme(plot.title = element_text(hjust = 0.5))
   
   return(output)
 }
