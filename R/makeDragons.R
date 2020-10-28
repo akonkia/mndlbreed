@@ -1,9 +1,10 @@
-#library("scales") # for axis labels notation#
+library("scales") # for axis labels notation#
 #library("dplyr")
-#library(rlist)
-#library(tidyverse)
+library(rlist)
+library(tidyverse)
 
-
+#' Learn Mendelian inheritance with dragons and potatoes
+#' @export
 ###################################Dragon genes################################
 gene_names <- c("Body colour", "Horn", "Wings", "Tail colour", "Tail spikes", "Toes number", "Fire breathing")
 
@@ -15,6 +16,7 @@ chromosome = c("chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7")
 start = c(50,80, 40, 100,150,80,260)
 end = c(60,90, 50,110,160,90,270)
 
+#' @export
 genes <- data.frame(chromosome, length, start, end, gene_names, t(alleles))
 rownames(genes) <-  NULL
 genes$chromosome <- factor(genes$chromosome,  levels = chromosome)
@@ -31,9 +33,11 @@ Genotype <- c("FF", "Ff", "ff", "MM", "Mm", "mm", "SS", "Ss", "ss", "TT", "Tt", 
 Phenotype <- c("Fire-breathing", "Fire-breathing", "Does not breath fire", "Four toes", "Four toes", "Three toes", "Five spikes on tail", "Five spikes on tail", "Four spikes on tail",
                "Red tail", "Red tail", "Yellow tail", "Red wings", "Red wings", "Yellow wings", "Horn", "Horn", "No horn", "Blue body and head", "Blue body and head", "Green body and head")
 
+#' @export
 phenoTable <- data.frame(Genotype, Phenotype)
 
 ##################create haplotype####
+#' @export
 createHaplotype <- function(traits){
   pick <- c()
   t <- traits
@@ -45,6 +49,7 @@ createHaplotype <- function(traits){
 ######################################
 
 #################create dragon########
+#' @export
 createDragon <- function(traits){
   n <- 2 #diploidy
   t<- traits
@@ -68,6 +73,7 @@ createDragon <- function(traits){
 # ########################################
 
 ###############Generate gametes#########
+#' @export
 generateGamete <- function(dragon){
   traits <- dim(dragon)[1]
   gamete <- vector(length = traits)
@@ -80,6 +86,7 @@ generateGamete <- function(dragon){
 #######################################
 
 #################Breed dragons#########
+#' @export
 breedDragon <- function(first, second){
   parents <- list(first, second)
   n <- 2
@@ -95,7 +102,8 @@ breedDragon <- function(first, second){
 
 ########################################
 ###############Sort genotype############
-###Sort alleles, so that aA or Aa is presented as Aa
+#' Sort alleles, so that aA or Aa is presented as Aa
+#' @export
 #helper function to getGenotype
 sortGenotype <- function(x) {
   tmp <- sort(x)
@@ -121,7 +129,8 @@ sortGenotype <- function(x) {
 ########################################
 
 ###############Get Genotype############
-##Present genotype in a succinct manner
+#' Present genotype in a succinct manner
+#' @export
 getGenotype <- function(dragon){
   gen <- unlist(dragon)
   sorted <- sortGenotype(gen)
@@ -130,7 +139,7 @@ getGenotype <- function(dragon){
 
 
 ####################Plot chromosomes#####
-
+#' @export
 plotChroms <- function(df, allele_set){
   colors <- c("#8DA0CB", "#FC8D62", "#66C2A5", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494")
   if (allele_set == 1){
@@ -162,6 +171,7 @@ plotChroms <- function(df, allele_set){
     )
 }
 #################Plot genotype#############
+#' @export
 plotGenotype <- function(dragon, name = "Dragon"){
   geno <- getGenotype(dragon)
   
@@ -187,6 +197,7 @@ plotGenotype <- function(dragon, name = "Dragon"){
 #
 
 ###############Show parental genotypes####
+#' @export
 showPair <- function(dragon, dragon2){
   
   p1 <- plotGenotype(dragon, "Dragon 1")
@@ -197,7 +208,9 @@ showPair <- function(dragon, dragon2){
 
 
 ###############Collapse genotype############
-###Sort alleles, so that aA or Aa is presented as Aa
+
+#' Sort alleles, so that aA or Aa is presented as Aa
+#' @export
 collapseGenotype <- function(dragon) {
   gen <- getGenotype(dragon)
   add <- 0
@@ -215,7 +228,7 @@ collapseGenotype <- function(dragon) {
 }
 
 ##################Output frequency plot/table for genotype########
-
+#' @export
 plotGenFreq <- function(sward){
   
   freq <- getFreq(sward)
@@ -240,6 +253,7 @@ plotGenFreq <- function(sward){
 }
 
 ###################Count freq of the genotypes#############
+#' @export
 countFreq <- function(sward){
   for (i in 1:length(sward)){
     if (i == 1){
@@ -258,6 +272,7 @@ countFreq <- function(sward){
 #df <- data.frame(matrix(unlist(l), nrow=132, byrow=T),stringsAsFactors=FALSE)
 
 ####################create sward of dragons#############
+#' @export
 makeSward <- function(drag1, drag2, offspring){
   sward <- list()
   for (i in 1:offspring){
@@ -268,6 +283,7 @@ makeSward <- function(drag1, drag2, offspring){
 
 
 ######create phenotype###################################
+#' @export
 getPhenotype <- function(dragon){
   type <- c(unlist(strsplit(collapseGenotype(dragon), " ")))
   phenotype <- phenoTable[phenoTable$Genotype %in% type,]
@@ -277,6 +293,7 @@ getPhenotype <- function(dragon){
 
 ########Phenotype sward############################
 #####Phenotypes every dragon in a sward###########
+#' @export
 phenotypeSward <- function(sward){
   phenotypes <- list()
   for (each in sward){
@@ -290,6 +307,7 @@ phenotypeSward <- function(sward){
 }
 
 ############## Show frequencies of the phenotypes
+#' @export
 showPhenFreq <- function(sward){
   phenotypes <- phenotypeSward(sward)
   freq <- count (phenotypes, phenotypes$Phenotype)
@@ -301,6 +319,7 @@ showPhenFreq <- function(sward){
 
 
 ##############Get genotype freq table
+#' @export
 getFreq <- function(sward){
   pool <- countFreq(sward)
   freq <- count (pool, pool$Genotype)
@@ -313,6 +332,7 @@ getFreq <- function(sward){
 }
 
 #################Give plot or table of genfreq###
+#' @export
 showGenFreq <- function(sward){
   
   freq <- getFreq(sward)
@@ -328,6 +348,7 @@ showGenFreq <- function(sward){
 }
 
 ##########Collapse phenoTable ####
+#' @export
 collapsePhenoTable <- function(phenoTable){
   
   temp <- phenoTable[!duplicated(phenoTable$Phenotype),]
@@ -346,6 +367,7 @@ collapsePhenoTable <- function(phenoTable){
 
 
 ############Shorten phenoTable based on traits chosen######
+#' @export
 shortenPhenoTable <- function(traits){
   type <- c(unlist(strsplit(collapseGenotype(traits), " ")))
   type <- c(type, tolower(type))
@@ -357,19 +379,19 @@ shortenPhenoTable <- function(traits){
   return(shortTable)
 }
 
-
+#' @export
 homozygoteRe <- function(dragon){
   dragon$set1 <- tolower(dragon$set1)
   dragon$set2 <- tolower(dragon$set2)
   return(dragon)
 }
-
+#' @export
 homozygoteDo <- function(dragon){
   dragon$set1 <- toupper(dragon$set1)
   dragon$set2 <- toupper(dragon$set2)
   return(dragon)
 }
-
+#' @export
 heterozygote <- function(dragon){
   dragon$set1 <- toupper(dragon$set1)
   dragon$set2 <- tolower(dragon$set2)
