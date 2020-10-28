@@ -1,7 +1,7 @@
-#library("scales") # for axis labels notation#
+library("scales") # for axis labels notation#
 #library("dplyr")
-#library(rlist)
-#library(tidyverse)
+library(rlist)
+library(tidyverse)
 
 #' Learn Mendelian inheritance with dragons and potatoes
 #' @export
@@ -9,7 +9,9 @@
 gene_names <- c("Body colour", "Horn", "Wings", "Tail colour", "Tail spikes", "Toes number", "Fire breathing")
 
 #alleles = data.frame(c("A", "a"), c("B", "b"), c("C", "c"), c("D", "d"),c("E", "e"))
+#' @export
 alleles <- data.frame(c("A", "a"), c("H", "h"), c("W", "w"), c("T", "t"),c("S", "s"), c("M", "m"),c("F", "f"))
+
 colnames(alleles) <- c("Body and head color", "Horn", "Wing color", "Tail color", "Number of tail spikes", "Number of toes", "Fire-breathing")
 length = c(100L, 150L, 180L, 200L, 250, 280L, 300L)
 chromosome = c("chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7")
