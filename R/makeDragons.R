@@ -60,15 +60,20 @@ addCodominance <- function(param = FALSE){
 ##############################################################################
 
 ################################Phenotyping table#############################
+#' @export
 GenotypeCod <- c("FF", "Ff", "ff", "MM", "Mm", "mm", "SS", "Ss", "ss", "TT", "Tt", "tt", "WW", "Ww", "ww", "HH", "Hh", "hh", "AA", "Aa", "aa", "@@", "A@", "a@")
-
+#' @export
 PhenotypeCod <- c("Fire-breathing", "Fire-breathing", "Does not breath fire", "Four toes", "Four toes", "Three toes", "Five spikes on tail", "Five spikes on tail", "Four spikes on tail",
                "Red tail", "Red tail", "Yellow tail", "Red wings", "Red wings", "Yellow wings", "Horn", "Horn", "No horn", "Blue body and head", "Blue body and head", "Green body and head", "Black body and head", "Stripy blue and black body and head", "Black body and head")
+#' @export
 GenotypeSim <- c("FF", "Ff", "ff", "MM", "Mm", "mm", "SS", "Ss", "ss", "TT", "Tt", "tt", "WW", "Ww", "ww", "HH", "Hh", "hh", "AA", "Aa", "aa")
 
+#' @export
 PhenotypeSim <- c("Fire-breathing", "Fire-breathing", "Does not breath fire", "Four toes", "Four toes", "Three toes", "Five spikes on tail", "Five spikes on tail", "Four spikes on tail",
                   "Red tail", "Red tail", "Yellow tail", "Red wings", "Red wings", "Yellow wings", "Horn", "Horn", "No horn", "Blue body and head", "Blue body and head", "Green body and head")
+#' @export
 Genotype <- GenotypeSim
+#' @export
 Phenotype <- PhenotypeSim
 
 #' @export
