@@ -1,7 +1,7 @@
-library("scales") # for axis labels notation#
+#library("scales") # for axis labels notation#
 #library("dplyr")
-library(rlist)
-library(tidyverse)
+#library(rlist)
+#library(tidyverse)
 
 #' Learn Mendelian inheritance with dragons and potatoes
 #' @export
