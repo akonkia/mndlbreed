@@ -1,28 +1,57 @@
-#library("scales") # for axis labels notation#
-#library("dplyr")
-#library(rlist)
-#library(tidyverse)
-
 #' Learn Mendelian inheritance with dragons and potatoes
+
 #' @export
 ###################################Dragon genes################################
 gene_names <- c("Body colour", "Horn", "Wings", "Tail colour", "Tail spikes", "Toes number", "Fire breathing")
 
-#alleles = data.frame(c("A", "a"), c("B", "b"), c("C", "c"), c("D", "d"),c("E", "e"))
 #' @export
-alleles <- data.frame(c("A", "a"), c("H", "h"), c("W", "w"), c("T", "t"),c("S", "s"), c("M", "m"),c("F", "f"))
-
+allelesSim <- data.frame(c("A", "a"), c("H", "h"), c("W", "w"), c("T", "t"),c("S", "s"), c("M", "m"),c("F", "f"))
+alleles <- allelesSim
 colnames(alleles) <- c("Body and head color", "Horn", "Wing color", "Tail color", "Number of tail spikes", "Number of toes", "Fire-breathing")
 length = c(100L, 150L, 180L, 200L, 250, 280L, 300L)
 chromosome = c("chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7")
 start = c(50,80, 40, 100,150,80,260)
 end = c(60,90, 50,110,160,90,270)
 
+#' Dataframe containing information for dragon breeding (simple Mendelian inheritance)
 #' @export
 genes <- data.frame(chromosome, length, start, end, gene_names, t(alleles))
 rownames(genes) <-  NULL
 genes$chromosome <- factor(genes$chromosome,  levels = chromosome)
 colnames(genes) <- c("Chromosome", "Length", "Start", "End", "Gene", "Allele 1", "Allele 2")
+
+#' @export
+allelesCod <- data.frame(c("A","a", "@"), c("H", "h", NA), c("W", "w", NA), c("T", "t", NA),c("S", "s", NA), c("M", "m", NA),c("F", "f", NA))
+
+#' For simple Mendelian inheritance, we assume that there is no codominance
+#' Choose x = 1 for adding codominance, or x = 0, to return back to the simple model
+#' @export
+addCodominance <- function(param = FALSE){
+  if (param == FALSE){
+    alleles <- allelesSim
+    colnames(alleles) <- c("Body and head color", "Horn", "Wing color", "Tail color", "Number of tail spikes", "Number of toes", "Fire-breathing")
+    genes <- data.frame(chromosome, length, start, end, gene_names, t(alleles))
+    rownames(genes) <-  NULL
+    genes$chromosome <- factor(genes$chromosome,  levels = chromosome)
+    colnames(genes) <- c("Chromosome", "Length", "Start", "End", "Gene", "Allele 1", "Allele 2")
+    alleles <- data.frame(c("A", "a"), c("H", "h"), c("W", "w"), c("T", "t"),c("S", "s"), c("M", "m"),c("F", "f"))
+    colnames(alleles) <- c("Body and head color", "Horn", "Wing color", "Tail color", "Number of tail spikes", "Number of toes", "Fire-breathing")
+    Genotype <- GenotypeSim
+    Phenotype <- PhenotypeSim
+    phenoTable <- data.frame(Genotype, Phenotype)
+  }else if (param == TRUE){
+    alleles <- allelesCod
+    colnames(alleles) <- c("Body and head color", "Horn", "Wing color", "Tail color", "Number of tail spikes", "Number of toes", "Fire-breathing")
+    genes <- data.frame(chromosome, length, start, end, gene_names, t(alleles))
+    rownames(genes) <-  NULL
+    genes$chromosome <- factor(genes$chromosome,  levels = chromosome)
+    colnames(genes) <- c("Chromosome", "Length", "Start", "End", "Gene", "Allele 1", "Allele 2" , "Allele 3")
+    Genotype <- GenotypeCod
+    Phenotype <- PhenotypeCod
+    phenoTable <- data.frame(Genotype, Phenotype)
+     }
+  return(list(genes = genes, alleles = alleles, phenoTable = phenoTable))
+}
 
 # save(genes, file = "genes.RData")
 # load("genes.RData")
@@ -30,10 +59,16 @@ colnames(genes) <- c("Chromosome", "Length", "Start", "End", "Gene", "Allele 1",
 ##############################################################################
 
 ################################Phenotyping table#############################
-Genotype <- c("FF", "Ff", "ff", "MM", "Mm", "mm", "SS", "Ss", "ss", "TT", "Tt", "tt", "WW", "Ww", "ww", "HH", "Hh", "hh", "AA", "Aa", "aa")
+GenotypeCod <- c("FF", "Ff", "ff", "MM", "Mm", "mm", "SS", "Ss", "ss", "TT", "Tt", "tt", "WW", "Ww", "ww", "HH", "Hh", "hh", "AA", "Aa", "aa", "@@", "A@", "a@")
 
-Phenotype <- c("Fire-breathing", "Fire-breathing", "Does not breath fire", "Four toes", "Four toes", "Three toes", "Five spikes on tail", "Five spikes on tail", "Four spikes on tail",
-               "Red tail", "Red tail", "Yellow tail", "Red wings", "Red wings", "Yellow wings", "Horn", "Horn", "No horn", "Blue body and head", "Blue body and head", "Green body and head")
+PhenotypeCod <- c("Fire-breathing", "Fire-breathing", "Does not breath fire", "Four toes", "Four toes", "Three toes", "Five spikes on tail", "Five spikes on tail", "Four spikes on tail",
+               "Red tail", "Red tail", "Yellow tail", "Red wings", "Red wings", "Yellow wings", "Horn", "Horn", "No horn", "Blue body and head", "Blue body and head", "Green body and head", "Black body and head", "Stripy blue and black body and head", "Black body and head")
+GenotypeSim <- c("FF", "Ff", "ff", "MM", "Mm", "mm", "SS", "Ss", "ss", "TT", "Tt", "tt", "WW", "Ww", "ww", "HH", "Hh", "hh", "AA", "Aa", "aa")
+
+PhenotypeSim <- c("Fire-breathing", "Fire-breathing", "Does not breath fire", "Four toes", "Four toes", "Three toes", "Five spikes on tail", "Five spikes on tail", "Four spikes on tail",
+                  "Red tail", "Red tail", "Yellow tail", "Red wings", "Red wings", "Yellow wings", "Horn", "Horn", "No horn", "Blue body and head", "Blue body and head", "Green body and head")
+Genotype <- GenotypeSim
+Phenotype <- PhenotypeSim
 
 #' @export
 phenoTable <- data.frame(Genotype, Phenotype)
@@ -44,7 +79,11 @@ createHaplotype <- function(traits){
   pick <- c()
   t <- traits
   for (i in 1:length(t)){
-    pick <- c(pick, sample(t[[i]], 1))
+    if (any(is.na(t[[i]]))){
+      pick <- c(pick, sample(t[[i]][!is.na(t[[i]])], 1))
+    }else{
+      pick <- c(pick, sample(t[[i]], 1))
+    }
   }
   return(pick)
 }
@@ -113,14 +152,26 @@ sortGenotype <- function(x) {
   
   for (char in 1:(length(tmp)-1)){
     
-    if ( tmp[char] == tmp[char+1]){
-      g[char] <- tmp[char]
-      g[char+1] <- tmp[char+1]
-    }else if(tolower(tmp[char]) == tolower(tmp[char+1])){
-      if (str_detect(tmp[char], "^[:upper:]+$")){
+    for (char in 1:(length(tmp)-1)){
+      #print (tmp[char])
+      #print(tmp[char+1])
+      if ( tmp[char] == tmp[char+1]){
         g[char] <- tmp[char]
         g[char+1] <- tmp[char+1]
-      }else{
+      }else if(tolower(tmp[char]) == tolower(tmp[char+1])){
+        if (str_detect(tmp[char], "^[:upper:]+$")){
+          g[char] <- tmp[char]
+          g[char+1] <- tmp[char+1]
+          #print(g[char])
+        }else{
+          g[char] <- tmp[char+1]
+          g[char+1] <- tmp[char]
+          #print(g[char])
+        }
+      }else if(tmp[char+1] == "@"){
+        g[char] <- tmp[char]
+        g[char+1] <- tmp[char+1]
+      }else if (tmp[char] == "@"){
         g[char] <- tmp[char+1]
         g[char+1] <- tmp[char]
       }
@@ -181,6 +232,7 @@ plotGenotype <- function(dragon, name = "Dragon"){
   df <- genes[genes$`Allele 1`%in% geno | genes$`Allele 2` %in% geno, ] 
   df$`Allele 1` <- dragon$set1
   df$`Allele 2` <- dragon$set2
+  df$`Allele 3` <- NULL
   rownames(df) <- 1:dim(df)[1]
   #Set 1
   set1 <- plotChroms(df, 1)
@@ -399,3 +451,18 @@ heterozygote <- function(dragon){
   dragon$set2 <- tolower(dragon$set2)
   return(dragon)
 }
+
+#' @export
+createNames <- function(x){
+  #x is a number of offspring available
+  sheet <- list()
+  for (i in 1:x){
+    sheet <- list.append(sheet, paste0(sample(dragFirst, 1)," ", sample(dragSecond, 1)))
+  }
+  invisible(sheet)
+}
+
+dragNames <- as.data.frame(read.csv("D:/Run/KYP/breedDragons/babynames-clean.csv", header = FALSE))
+dragFirst <- dragNames$V1
+dragSecond <- str_to_title(dragNames$V3)
+dragSecond <- dragSecond[!c(dragSecond == "")]
