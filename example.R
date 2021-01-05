@@ -1,10 +1,12 @@
-#source("breedDragons/makeDragons.R")
+#To load all necessary functions, run the below script or, alternatively, install the mndlbreed package with devtools and then run: library(mndlbreed)
+source("breedDragons/makeDragons.R")
+
 library(ggpubr)
 library(gridExtra)
 library(grid)
 library(ggplot2)
 library(lattice)
-library(mndlbreed)
+
 
 #User input
 offspring <- 100 # number of offspring to be generated
