@@ -1,6 +1,7 @@
 # mndlbreed
 
 Learn Mendelian inheritance with dragons and potatoes.
+You can find a live version of the package used in a Shiny R simulation here: https://knowyourpotato.com/
 
 
 Inspired by the dragon breeding game (more info here: https://www.scienceinschool.org/2011/issue18/dragons) developed by Pat Tellinghuisen, Jennifer Sexton and Rachael Shevin.
