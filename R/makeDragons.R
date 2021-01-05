@@ -452,4 +452,8 @@ heterozygote <- function(organism){
   return(organism)
 }
 
-
+#' @export
+visible <- function(grob){
+  grid.newpage()
+  grid.draw(grob)
+}
