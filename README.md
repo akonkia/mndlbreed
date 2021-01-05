@@ -1,8 +1,14 @@
 # mndlbreed
 
 Learn Mendelian inheritance with dragons and potatoes.
+
+
 You can find a live version of the package used in a Shiny R simulation here: https://knowyourpotato.com/
 
+This yet undocummented package can be installed locally in your RStudio by running:
+install.packages("devtools")
+library("devtools")
+devtools::install_github("akonkia/mndlbreed")
 
 Inspired by the dragon breeding game (more info here: https://www.scienceinschool.org/2011/issue18/dragons) developed by Pat Tellinghuisen, Jennifer Sexton and Rachael Shevin.
 
