@@ -13,7 +13,7 @@ chromosome = c("chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7")
 start = c(50,80, 40, 100,150,80,260)
 end = c(60,90, 50,110,160,90,270)
 
-#' Dataframe containing information for dragon breeding (simple Mendelian inheritance)
+#' Dataframe containing information for breeding (simple Mendelian inheritance)
 #' @export
 genes <- data.frame(chromosome, length, start, end, gene_names, t(alleles))
 rownames(genes) <-  NULL
@@ -89,56 +89,56 @@ createHaplotype <- function(traits){
 }
 ######################################
 
-#################create dragon########
+#################create organism########
 #' @export
-createDragon <- function(traits){
+createOrganism <- function(traits){
   n <- 2 #diploidy
   t<- traits
-  dragon <- list()
+  organism <- list()
   for (i in 1:n){
     set <- createHaplotype(t)
-    dragon <- list.append(dragon, set)
+    organism <- list.append(organism, set)
   }
-  dragon <- data.frame(dragon)
-  colnames(dragon)<- c("set1", "set2") #will throw an error for diploidy different than 2
-  return(dragon)
+  organism <- data.frame(organism)
+  colnames(organism)<- c("set1", "set2") #will throw an error for diploidy different than 2
+  return(organism)
 }
 #######################################
 
 
 # ##############Set parents###############
-# setParents <- function(drag1, drag2){
-#   parents <- list(drag1, drag2)
+# setParents <- function(org1, org2){
+#   parents <- list(org1, org2)
 #   return(parents)
 # }
 # ########################################
 
 ###############Generate gametes#########
 #' @export
-generateGamete <- function(dragon){
-  traits <- dim(dragon)[1]
+generateGamete <- function(organism){
+  traits <- dim(organism)[1]
   gamete <- vector(length = traits)
   for (i in 1:traits){
-    allele <- unlist(sample(dragon[i,],1))
+    allele <- unlist(sample(organism[i,],1))
     gamete[i] <- allele
   }
   return (gamete)
 }
 #######################################
 
-#################Breed dragons#########
+#################Breed organisms#########
 #' @export
-breedDragon <- function(first, second){
+breed <- function(first, second){
   parents <- list(first, second)
   n <- 2
-  dragon <- list()
+  organism <- list()
   for (i in 1:n){
     gamete <- generateGamete(parents[[i]])
-    dragon <- list.append(dragon, gamete)
+    organism <- list.append(organism, gamete)
   }
-  dragon <- data.frame(dragon)
-  colnames(dragon)<- c("set1", "set2") #will throw an error for diploidy different than 2
-  return(dragon)
+  organism <- data.frame(organism)
+  colnames(organism)<- c("set1", "set2") #will throw an error for diploidy different than 2
+  return(organism)
 }
 
 ########################################
@@ -184,8 +184,8 @@ sortGenotype <- function(x) {
 ###############Get Genotype############
 #' Present genotype in a succinct manner
 #' @export
-getGenotype <- function(dragon){
-  gen <- unlist(dragon)
+getGenotype <- function(organism){
+  gen <- unlist(organism)
   sorted <- sortGenotype(gen)
   return(sorted)
 }
@@ -225,26 +225,26 @@ plotChroms <- function(df, allele_set){
 }
 #################Plot genotype#############
 #' @export
-plotGenotype <- function(dragon, name = "Dragon"){
-  geno <- getGenotype(dragon)
+plotGenotype <- function(organism, name = "Dragon"){
+  geno <- getGenotype(organism)
   
   #create a df with chromosomes containing genes taken under account
   df <- genes[genes$`Allele 1`%in% geno | genes$`Allele 2` %in% geno, ] 
-  df$`Allele 1` <- dragon$set1
-  df$`Allele 2` <- dragon$set2
+  df$`Allele 1` <- organism$set1
+  df$`Allele 2` <- organism$set2
   df$`Allele 3` <- NULL
   rownames(df) <- 1:dim(df)[1]
   #Set 1
   set1 <- plotChroms(df, 1)
   #Set 2
   set2 <- plotChroms(df, 2)
-  plot <- grid.arrange(set1, set2, nrow = 1)
+  plot <- arrangeGrob(set1, set2, nrow = 1)
   text1 <- text_grob(name, face = "bold", family = "mono", size = 20)
   text2 <- text_grob(collapseGenotype(geno), family = "mono", size = 16)
-  text <- grid.arrange(text1, text2, nrow = 2)
+  text <- arrangeGrob(text1, text2, nrow = 2)
   #title <- str_c(name, collapseGenotype(geno), sep = "\n")
   #text <- text_grob(title, family = "mono", size = 20)
-  plot2 <- grid.arrange(text, plot, ncol = 1, heights = c(2/10, 8/10))
+  plot2 <- arrangeGrob(text, plot, ncol = 1, heights = c(2/10, 8/10))
   
   return(plot2)
 }
@@ -252,11 +252,11 @@ plotGenotype <- function(dragon, name = "Dragon"){
 
 ###############Show parental genotypes####
 #' @export
-showPair <- function(dragon, dragon2){
+showPair <- function(organism, organism2){
   
-  p1 <- plotGenotype(dragon, "Dragon 1")
-  p2 <- plotGenotype(dragon2, "Dragon 2")
-  p3 <- grid.arrange(p1, p2, ncol = 1)
+  p1 <- plotGenotype(organism, "Dragon 1")
+  p2 <- plotGenotype(organism2, "Dragon 2")
+  p3 <- arrangeGrob(p1, p2, ncol = 1)
   return (p3)
 }
 
@@ -265,8 +265,8 @@ showPair <- function(dragon, dragon2){
 
 #' Sort alleles, so that aA or Aa is presented as Aa
 #' @export
-collapseGenotype <- function(dragon) {
-  gen <- getGenotype(dragon)
+collapseGenotype <- function(organism) {
+  gen <- getGenotype(organism)
   add <- 0
   short <- ""
   for(i in 1:(length(gen)/2)){
@@ -325,12 +325,12 @@ countFreq <- function(sward){
 #strings not as factors:
 #df <- data.frame(matrix(unlist(l), nrow=132, byrow=T),stringsAsFactors=FALSE)
 
-####################create sward of dragons#############
+####################create population of organisms#############
 #' @export
-makeSward <- function(drag1, drag2, offspring){
+makeSward <- function(org1, org2, offspring){
   sward <- list()
   for (i in 1:offspring){
-    sward <- list.append(sward, breedDragon(drag1, drag2))
+    sward <- list.append(sward, breed(org1, org2))
   }
   return(sward)
 }
@@ -338,15 +338,15 @@ makeSward <- function(drag1, drag2, offspring){
 
 ######create phenotype###################################
 #' @export
-getPhenotype <- function(dragon){
-  type <- c(unlist(strsplit(collapseGenotype(dragon), " ")))
+getPhenotype <- function(organism){
+  type <- c(unlist(strsplit(collapseGenotype(organism), " ")))
   phenotype <- phenoTable[phenoTable$Genotype %in% type,]
   rownames(phenotype) <- NULL
   return(phenotype)
 }
 
 ########Phenotype sward############################
-#####Phenotypes every dragon in a sward###########
+#####Phenotypes every organism in population###########
 #' @export
 phenotypeSward <- function(sward){
   phenotypes <- list()
@@ -391,7 +391,7 @@ showGenFreq <- function(sward){
   
   freq <- getFreq(sward)
   
-  if (dim(freq)[1] <9){
+  if (dim(freq)[1] <25){
     
     output <- plotGenFreq(sward)
   }else{
@@ -434,35 +434,22 @@ shortenPhenoTable <- function(traits){
 }
 
 #' @export
-homozygoteRe <- function(dragon){
-  dragon$set1 <- tolower(dragon$set1)
-  dragon$set2 <- tolower(dragon$set2)
-  return(dragon)
+homozygoteRe <- function(organism){
+  organism$set1 <- tolower(organism$set1)
+  organism$set2 <- tolower(organism$set2)
+  return(organism)
 }
 #' @export
-homozygoteDo <- function(dragon){
-  dragon$set1 <- toupper(dragon$set1)
-  dragon$set2 <- toupper(dragon$set2)
-  return(dragon)
+homozygoteDo <- function(organism){
+  organism$set1 <- toupper(organism$set1)
+  organism$set2 <- toupper(organism$set2)
+  return(organism)
 }
 #' @export
-heterozygote <- function(dragon){
-  dragon$set1 <- toupper(dragon$set1)
-  dragon$set2 <- tolower(dragon$set2)
-  return(dragon)
+heterozygote <- function(organism){
+  organism$set1 <- toupper(organism$set1)
+  organism$set2 <- tolower(organism$set2)
+  return(organism)
 }
 
-#' @export
-createNames <- function(x){
-  #x is a number of offspring available
-  sheet <- list()
-  for (i in 1:x){
-    sheet <- list.append(sheet, paste0(sample(dragFirst, 1)," ", sample(dragSecond, 1)))
-  }
-  invisible(sheet)
-}
 
-dragNames <- as.data.frame(read.csv("D:/Run/KYP/breedDragons/babynames-clean.csv", header = FALSE))
-dragFirst <- dragNames$V1
-dragSecond <- str_to_title(dragNames$V3)
-dragSecond <- dragSecond[!c(dragSecond == "")]
