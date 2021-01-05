@@ -1,20 +1,21 @@
-source("breedDragons/makeDragons.R")
+#source("breedDragons/makeDragons.R")
 library(ggpubr)
 library(gridExtra)
 library(grid)
 library(ggplot2)
 library(lattice)
+library(mndlbreed)
 
 #User input
 offspring <- 100 # number of offspring to be generated
 t <- sample(alleles, 7) #  Number of traits to be taken. Up to 7 traits available.  For now, we assume that one trait goes on one individual chromosome.
 
 # Start with creating two dragon parents
-drag1 <- createDragon(t)
-drag2 <- createDragon(t)
+drag1 <- createOrganism(t)
+drag2 <- createOrganism(t)
 
-# Plot genotypes of the parents
-showPair(drag1, drag2)
+# Plot genotypes of the parents.
+visible(showPair(drag1, drag2))
 
 # create a sward of dragons, offspring (n) of the selected parents. Outputs plot under 4 traits, and table over 3 traits. Need to modify.
 sward <- makeSward(drag1, drag2, offspring)
@@ -26,13 +27,13 @@ showGenFreq(sward)
 plotGenFreq(sward)
 
 #Create a table of the sward genotypes
-dim(getFreq(sward))
+getFreq(sward)
 
 # Plot a selected dragon from the sward. You can add a name as a second argument.
-plotGenotype(sward[[2]], "Elvis")
+visible(plotGenotype(sward[[2]], "Elvis"))
 
 # Show frequencies of the genotypes (table)
-freq <- getFreq(sward)
+(freq <- getFreq(sward))
 
 # Get phenotype of a dragon
 
@@ -45,7 +46,8 @@ phenoTable
 collapsePhenoTable(phenoTable)
 
 # Create a short collapsed phenotype table, containing only traits chosen for the simulation
-shortTable <- shortenPhenoTable(t)
+(shortTable <- shortenPhenoTable(t))
 
 # Show frequencies of the phenotypes
 showPhenFreq(sward)
+
